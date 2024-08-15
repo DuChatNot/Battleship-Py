@@ -18,23 +18,27 @@ class InputHandler:
         g = Game();
         board = g.board;
         while True:
-            i = input("Vertical (v) / Horizontal (h): ").lower() 
-            if i == "v":
-                iter = 0;
-                while iter < tiles:
-                    board[index][column + iter][row] = 1
-                    iter += 1;
-                break;
+            try:
+                i = input("Vertical (v) / Horizontal (h): ").lower() 
+                if i == "v":
+                    iter = 0;
+                    while iter < tiles:
+                        board[index][column + iter][row] = 1
+                        iter += 1;
+                    break;
             
-            elif i == "h":
-                iter = 0;
-                while iter < tiles:
-                    board[index][column][row + iter] = 1
-                    iter += 1;
-                break;
+                elif i == "h":
+                    iter = 0;
+                    while iter < tiles:
+                        board[index][column][row + iter] = 1
+                        iter += 1;
+                    break;
         
-            else:
-                print("Invalid orientation input [h - v], Try again... ")
+                else:
+                    print("Invalid orientation input [h - v], Try again... ")
+
+            except Exception:
+                return "outOfBounds";
 
         return board[index];
 
@@ -110,17 +114,25 @@ class Game:
         for index, p in enumerate(players):
 
             #Destructor
-
-            print(f"{p} Enter Destructor coordinates (3 tiles): ")
-            destructorStartingTile = iH.coordinatesCheck();
-            orientedBoard = iH.orientationCheck(index, destructorStartingTile[0], destructorStartingTile[1], s.ships["destructor"])
-            self.setBoard(index, orientedBoard, "D");
+            while True:
+                print(f"{p} Enter Destructor coordinates (3 tiles): ")
+                destructorStartingTile = iH.coordinatesCheck();
+                orientedBoard = iH.orientationCheck(index, destructorStartingTile[0], destructorStartingTile[1], s.ships["destructor"])
+                if orientedBoard == "outOfBounds":
+                    print("Invalid location, Try again...")
+                else:
+                    self.setBoard(index, orientedBoard, "D")
+                    break;
             
             # Cruiser
-            
-            print(f"{p} Enter Cruiser starting coordinates (2 tiles): ")
-            cruiserStartingTile = iH.coordinatesCheck();
-            orientedBoard = iH.orientationCheck(index, cruiserStartingTile[0], cruiserStartingTile[1], s.ships["cruiser"])
+            while True:
+                print(f"{p} Enter Cruiser starting coordinates (2 tiles): ")
+                cruiserStartingTile = iH.coordinatesCheck();
+                orientedBoard = iH.orientationCheck(index, cruiserStartingTile[0], cruiserStartingTile[1], s.ships["cruiser"])
+                if orientedBoard == "outOfBounds":
+                    print("Invalid location, Try again...")
+                else:
+                    break;
 
             #Collision check
             if self.setBoard(index, orientedBoard, "C"):
@@ -132,10 +144,14 @@ class Game:
                         break;
 
             #AircrafCarrier
-
-            print(f"{p} Enter Aircraft Carrier starting coordinates (5 tiles): ")
-            aircraftCarrierStartingTile = iH.coordinatesCheck();
-            orientedBoard = iH.orientationCheck(index, aircraftCarrierStartingTile[0], aircraftCarrierStartingTile[1], s.ships["aircraftCarrier"])
+            while True:
+                print(f"{p} Enter Aircraft Carrier starting coordinates (5 tiles): ")
+                aircraftCarrierStartingTile = iH.coordinatesCheck();
+                orientedBoard = iH.orientationCheck(index, aircraftCarrierStartingTile[0], aircraftCarrierStartingTile[1], s.ships["aircraftCarrier"])
+                if orientedBoard == "outOfBounds":
+                    print("Invalid location, Try again...")
+                else:
+                    break;
 
             #Collision check
             if self.setBoard(index, orientedBoard, "AC"):
