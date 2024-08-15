@@ -97,7 +97,9 @@ class Game:
             print();
 
     def registry(self):
+        print();
         print("Welcome to Battleship!")
+        print();
         self.p1 = Player(input("Player One nickname: "))
         self.p2 = Player(input("Player Two nickname: "))
         if self.p1.name == self.p2.name:
@@ -115,7 +117,7 @@ class Game:
 
             #Destructor
             while True:
-                print(f"{p} Enter Destructor coordinates (3 tiles): ")
+                print(f"{p} Enter Destructor coordinates (",s.ships["destructor"],"tiles ): ")
                 destructorStartingTile = iH.coordinatesCheck();
                 orientedBoard = iH.orientationCheck(index, destructorStartingTile[0], destructorStartingTile[1], s.ships["destructor"])
                 if orientedBoard == "outOfBounds":
@@ -126,7 +128,7 @@ class Game:
             
             # Cruiser
             while True:
-                print(f"{p} Enter Cruiser starting coordinates (2 tiles): ")
+                print(f"{p} Enter Cruiser coordinates (",s.ships["cruiser"],"tiles ): ")
                 cruiserStartingTile = iH.coordinatesCheck();
                 orientedBoard = iH.orientationCheck(index, cruiserStartingTile[0], cruiserStartingTile[1], s.ships["cruiser"])
                 if orientedBoard == "outOfBounds":
@@ -145,7 +147,7 @@ class Game:
 
             #AircrafCarrier
             while True:
-                print(f"{p} Enter Aircraft Carrier starting coordinates (5 tiles): ")
+                print(f"{p} Enter Aircraft Carrier coordinates (",s.ships["aircraftCarrier"],"tiles ): ")
                 aircraftCarrierStartingTile = iH.coordinatesCheck();
                 orientedBoard = iH.orientationCheck(index, aircraftCarrierStartingTile[0], aircraftCarrierStartingTile[1], s.ships["aircraftCarrier"])
                 if orientedBoard == "outOfBounds":
@@ -165,8 +167,71 @@ class Game:
         print("--- Board Status ---")
         self.getBoard();
 
+    def damageCheck(self, oponentBoard):
+        wipedOutBoard = [[0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0], 
+                    [0,0,0,0,0,0,0,0,0,0], 
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0],
+                    [0,0,0,0,0,0,0,0,0,0]]
+        
+        if self.board[oponentBoard] == wipedOutBoard:
+            return True;
+
+    def impactCheck(self, index, column, row, playerName):
+        oponentBoard = 1;
+        if index == 1:
+            oponentBoard = 0
+
+        if self.board[oponentBoard][column][row] != 0:
+            print();
+            print(f"IMPACT on {self.board[oponentBoard][column][row]}!")
+            print();
+            self.board[oponentBoard][column][row] = 0
+        else:
+            print("Miss!")
+
+        if self.damageCheck(oponentBoard):
+            return list((True, playerName));
+
+        return [0,0];
+
+    def combatPhase(self):
+        print();
+        print("--- Combat Phase ---")
+        print();
+        players = [self.p1.name, self.p2.name];
+        iH = InputHandler();
+
+        while True:
+
+            for index, p in enumerate(players):
+                print(" --- ")
+                print(f"{p} make your play: ")
+                print(" --- ")
+
+                playerShot = iH.coordinatesCheck()
+                isDead = self.impactCheck(index, playerShot[0], playerShot[1], p)
+                if isDead[0] == True:
+                    print("--- --- --- --- --- ---")
+                    print(f"Oponent has no ships standing... {isDead[1]} Wins the Match!!")
+                    print("--- --- --- --- --- ---")
+                    print("Board: ")
+                    self.getBoard();
+                    print("--- --- --- --- --- ---")
+                    return;
+
+
+
+
+
 #Game start:
 g = Game();
 g.registry();
 g.shipSetUp();
+g.combatPhase();
 
